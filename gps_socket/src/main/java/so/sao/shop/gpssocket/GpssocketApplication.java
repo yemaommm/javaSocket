@@ -26,7 +26,7 @@ public class GpssocketApplication implements ApplicationContextAware {
         springApplication.setWebEnvironment(false);
         springApplication.run(args);
 
-        NettyHandler bean = context.getBean(NettyHandler.class);
+        NettyServer bean = context.getBean(NettyServer.class);
         bean.run();
     }
 
