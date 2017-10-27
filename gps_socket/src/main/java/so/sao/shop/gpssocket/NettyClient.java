@@ -1,19 +1,38 @@
 package so.sao.shop.gpssocket;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.*;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+import so.sao.shop.gpssocket.Utils.BodyUtils;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
 /**
  * @author negocat on 2017/10/27.
  */
+@Component
+@ConfigurationProperties(prefix = "socket.server")
 public class NettyClient {
+    private byte[] headByte;
+    private byte[] endByte;
+
+    public void setHeadByte(byte[] headByte) {
+        this.headByte = headByte;
+    }
+
+    public void setEndByte(byte[] endByte) {
+        this.endByte = endByte;
+    }
 
     /**
      * 连接服务器
@@ -22,6 +41,8 @@ public class NettyClient {
      * @throws Exception
      */
     public void connect(int port, String host) throws Exception {
+        BodyUtils.setEndByte(this.endByte);
+        BodyUtils.setHeadByte(this.headByte);
         //配置客户端NIO线程组
         EventLoopGroup group = new NioEventLoopGroup();
 
@@ -62,9 +83,10 @@ public class NettyClient {
 
         private final Logger logger= LoggerFactory.getLogger(ClientHandler.class.getName());
         private ByteBuf firstMessage;
+        public BodyUtils bodyUtils = new BodyUtils();
 
         public ClientHandler(){
-            byte[] req ="QUERY TIME ORDER".getBytes();
+            byte[] req ="发送QUERY TIME ORDER".getBytes();
             firstMessage= Unpooled.buffer(req.length);
             firstMessage.writeBytes(req);
 
@@ -72,8 +94,10 @@ public class NettyClient {
 
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
-            ctx.writeAndFlush(firstMessage);
+            bodyUtils.setCtx(ctx);
             System.out.println("客户端active");
+
+            bodyUtils.writeEncode("hhhh".getBytes(), (byte)1);
 
         }
 
@@ -105,6 +129,11 @@ public class NettyClient {
 
 
     public static void main(String[] args) throws Exception {
-        new NettyClient().connect(9999, "127.0.0.1");
+        SpringApplication springApplication = new SpringApplication(GpssocketApplication.class);
+        springApplication.setWebEnvironment(false);
+        springApplication.run(args);
+
+        NettyClient bean = GpssocketApplication.context.getBean(NettyClient.class);
+        bean.connect(9999, "127.0.0.1");
     }
 }

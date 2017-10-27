@@ -6,12 +6,16 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import so.sao.shop.gpssocket.Dto.MessageDto;
+import so.sao.shop.gpssocket.Utils.BodyUtils;
 
 /**
  * server端网络IO事件处理
@@ -21,8 +25,14 @@ public class NettyHandler extends ChannelHandlerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyHandler.class);
 
+    public BodyUtils bodyUtils = new BodyUtils();
     private ApplicationContext context = null;
 
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+        bodyUtils.setCtx(ctx);
+    }
     /**
      * 接受数据
      * @param ctx
@@ -34,11 +44,11 @@ public class NettyHandler extends ChannelHandlerAdapter {
 //        ByteBuf in = (ByteBuf) msg;
         try {
             System.out.println("服务器读取到客户端请求...");
-            ByteBuf buf=(ByteBuf) msg;
-            byte[] req=new byte[buf.readableBytes()];
-            buf.readBytes(req);
-            String body=new String(req,"UTF-8");
-            System.out.println("body: "+body);
+
+            MessageDto messageDto = bodyUtils.readDecode((ByteBuf) msg);
+            if (messageDto != null){
+                System.out.println(messageDto);
+            }
 
         } finally {
             // 以静默方式丢弃接收的数据
@@ -56,7 +66,24 @@ public class NettyHandler extends ChannelHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         // 出现异常时关闭连接。
         ctx.close();
+        cause.printStackTrace();
         LOGGER.error("服务器异常退出"+cause.getMessage());
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent e = (IdleStateEvent) evt;
+            if (e.state() == IdleState.READER_IDLE) {
+                ctx.close();
+                LOGGER.info("READER_IDLE 读超时");
+            } else if (e.state() == IdleState.WRITER_IDLE) {
+///                ByteBuf buff = ctx.alloc().buffer();
+///                buff.writeBytes("mayi test".getBytes());
+///                ctx.writeAndFlush(buff);
+///                LOGGER.info("WRITER_IDLE 写超时");
+            }
+        }
     }
 
     public NettyHandler(ApplicationContext context){

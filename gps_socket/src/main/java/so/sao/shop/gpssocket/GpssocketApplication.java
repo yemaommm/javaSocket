@@ -14,7 +14,7 @@ public class GpssocketApplication implements ApplicationContextAware {
     @Value("${socket.server.port}")
     private String port;
 
-    private static ApplicationContext context = null;
+    public static ApplicationContext context = null;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
