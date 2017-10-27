@@ -1,0 +1,43 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.8.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+group = 'so.sao.shop'
+version = '0.0.1-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+repositories {
+	maven {
+		url "https://nexus.sao.so/repository/maven-public/"
+		credentials {
+			username nexusUserName
+			password nexusPwd
+		}
+	}
+	mavenCentral()
+}
+
+
+dependencies {
+//	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+	compile('io.netty:netty-all:5.0.0.Alpha1')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
