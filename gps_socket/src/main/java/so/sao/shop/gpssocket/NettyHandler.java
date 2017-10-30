@@ -2,6 +2,7 @@ package so.sao.shop.gpssocket;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import so.sao.shop.gpssocket.Dto.MessageDto;
+import so.sao.shop.gpssocket.Interface.iService;
 import so.sao.shop.gpssocket.Utils.BodyUtils;
 
 /**
@@ -43,11 +45,19 @@ public class NettyHandler extends ChannelHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        ByteBuf in = (ByteBuf) msg;
         try {
-            System.out.println("服务器读取到客户端请求...");
+            LOGGER.info("ReadMassage: " + ByteBufUtil.hexDump((ByteBuf) msg));
 
             MessageDto messageDto = bodyUtils.readDecode((ByteBuf) msg);
-            if (messageDto != null){
-                System.out.println(messageDto);
+            while (messageDto != null){
+                LOGGER.info("AnalyzeReadMassage: " + messageDto);
+                String format = String.format("0x%02x", messageDto.getProtocol());
+
+                if (this.context.containsBean(format)){
+                    iService bean = (iService) this.context.getBean(format);
+                    bean.doService(bodyUtils, messageDto);
+                }
+
+                messageDto = bodyUtils.readDecode((ByteBuf) msg);
             }
 
         } finally {

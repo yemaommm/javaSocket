@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import so.sao.shop.gpssocket.Dto.MessageDto;
 import so.sao.shop.gpssocket.Utils.BodyUtils;
 
 import java.nio.ByteBuffer;
@@ -99,17 +100,26 @@ public class NettyClient {
 
             bodyUtils.writeEncode("hhhh".getBytes(), (byte)1);
 
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    while (true){
+//                        bodyUtils.writeEncode("".getBytes(), (byte)0x08);
+//                        try {
+//                            Thread.sleep(50000L);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }).run();
         }
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg)
                 throws Exception {
-            System.out.println("客户端收到服务器响应数据");
-            ByteBuf buf=(ByteBuf) msg;
-            byte[] req=new byte[buf.readableBytes()];
-            buf.readBytes(req);
-            String body=new String(req,"UTF-8");
-            System.out.println("Now is:"+body);
+            MessageDto messageDto = bodyUtils.readDecode((ByteBuf) msg);
+            System.out.println("收到服务器响应数据: " + messageDto);
         }
 
         @Override
