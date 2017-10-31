@@ -34,8 +34,9 @@ public class GPSLocationData implements iService {
         byte minute = bytes[4];//分
         byte second = bytes[5];//秒
         // GPS 数据长度，可见卫星个数：数据长度和可见卫星数各占 0.5byte
-        byte GPSLength = bytes[6];//GPS 信息长度
-        byte satelliteNum = bytes[7];//卫星个数
+        String stmp = CodeUtils.bytesToHexString(new byte[]{bytes[6]});//byte转16进制字符串
+        byte GPSLength = CodeUtils.str2Bcd(String.valueOf(stmp.charAt(0)))[0];//GPS 信息长度
+        byte satelliteNum = CodeUtils.str2Bcd(String.valueOf(stmp.charAt(1)))[0];//卫星个数
         // GPS 经纬度 经度纬度各占 4byte
         byte[] latitude = Arrays.copyOfRange(bytes, 7, 11);
         CoordinateDto latitudeDto = analyzeCoordinate(latitude);//经度

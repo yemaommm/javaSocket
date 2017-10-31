@@ -152,6 +152,29 @@ public class CodeUtils {
     }
 
     /**
+     * bytes转十六进制字符串
+     */
+    public static String bytesToHexString(byte[] b){
+        String s = new BigInteger(1, b).toString(16);
+        int len = 2*b.length;
+        len -= s.length();
+        if (len <= 0){
+            return s;
+        }
+        StringBuffer str = new StringBuffer();
+        for (int i = 0;i < len/2;i++){
+            str.append(stmp);
+        }
+        len = len % 2;
+        if (len <= 0){
+            return str.toString();
+        }
+        str.append(stmp.substring(0, len) + s);
+
+        return str.toString();
+    }
+
+    /**
      * 二进制字符串转bytes
      */
     public static byte[] binaryToBytes(String str){

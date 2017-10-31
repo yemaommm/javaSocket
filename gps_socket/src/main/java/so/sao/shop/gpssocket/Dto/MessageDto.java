@@ -40,7 +40,7 @@ public class MessageDto {
                     '}';
         }
         return "MessageDto{" +
-                "body='" + CodeUtils.bcd2Str(body) + '\'' +
+                "body='" + CodeUtils.bytesToHexString(body) + '\'' +
                 ", protocol=" + protocol +
                 '}';
     }
