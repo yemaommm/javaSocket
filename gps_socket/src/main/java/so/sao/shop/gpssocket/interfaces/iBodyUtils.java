@@ -1,7 +1,7 @@
-package so.sao.shop.gpssocket.Interface;
+package so.sao.shop.gpssocket.interfaces;
 
 import io.netty.buffer.ByteBuf;
-import so.sao.shop.gpssocket.Dto.MessageDto;
+import so.sao.shop.gpssocket.dto.MessageDto;
 
 import java.io.UnsupportedEncodingException;
 

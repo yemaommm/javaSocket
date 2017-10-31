@@ -1,9 +1,9 @@
-package so.sao.shop.gpssocket.Service;
+package so.sao.shop.gpssocket.service;
 
 import org.springframework.stereotype.Service;
-import so.sao.shop.gpssocket.Dto.MessageDto;
-import so.sao.shop.gpssocket.Interface.iBodyUtils;
-import so.sao.shop.gpssocket.Interface.iService;
+import so.sao.shop.gpssocket.dto.MessageDto;
+import so.sao.shop.gpssocket.interfaces.iBodyUtils;
+import so.sao.shop.gpssocket.interfaces.iService;
 
 /**
  * 心跳包

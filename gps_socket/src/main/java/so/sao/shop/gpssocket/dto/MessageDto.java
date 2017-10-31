@@ -1,6 +1,6 @@
-package so.sao.shop.gpssocket.Dto;
+package so.sao.shop.gpssocket.dto;
 
-import so.sao.shop.gpssocket.Utils.CodeUtils;
+import so.sao.shop.gpssocket.utils.CodeUtils;
 
 /**
  * @author negocat on 2017/10/27.

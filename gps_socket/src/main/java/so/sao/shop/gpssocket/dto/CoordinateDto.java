@@ -1,4 +1,4 @@
-package so.sao.shop.gpssocket.Dto;
+package so.sao.shop.gpssocket.dto;
 
 /**
  * 经纬度

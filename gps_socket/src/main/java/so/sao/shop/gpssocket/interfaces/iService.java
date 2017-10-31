@@ -1,6 +1,6 @@
-package so.sao.shop.gpssocket.Interface;
+package so.sao.shop.gpssocket.interfaces;
 
-import so.sao.shop.gpssocket.Dto.MessageDto;
+import so.sao.shop.gpssocket.dto.MessageDto;
 
 /**
  * @author negocat on 2017/10/30.

@@ -1,23 +1,17 @@
 package so.sao.shop.gpssocket;
 
-import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-import so.sao.shop.gpssocket.Dto.MessageDto;
-import so.sao.shop.gpssocket.Interface.iService;
-import so.sao.shop.gpssocket.Utils.BodyUtils;
+import so.sao.shop.gpssocket.dto.MessageDto;
+import so.sao.shop.gpssocket.interfaces.iService;
+import so.sao.shop.gpssocket.utils.BodyUtils;
 
 /**
  * server端网络IO事件处理

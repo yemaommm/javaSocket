@@ -1,7 +1,6 @@
-package so.sao.shop.gpssocket.Utils;
+package so.sao.shop.gpssocket.utils;
 
 import java.math.BigInteger;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**

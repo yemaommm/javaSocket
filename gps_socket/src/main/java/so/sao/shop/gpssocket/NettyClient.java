@@ -1,6 +1,5 @@
 package so.sao.shop.gpssocket;
 
-import ch.qos.logback.core.encoder.ByteArrayUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.*;
 import io.netty.channel.*;
@@ -12,15 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import so.sao.shop.gpssocket.Dto.MessageDto;
-import so.sao.shop.gpssocket.Utils.BodyUtils;
-import so.sao.shop.gpssocket.Utils.CodeUtils;
-
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.util.Arrays;
+import so.sao.shop.gpssocket.dto.MessageDto;
+import so.sao.shop.gpssocket.utils.BodyUtils;
+import so.sao.shop.gpssocket.utils.CodeUtils;
 
 /**
  * @author negocat on 2017/10/27.

@@ -1,14 +1,12 @@
-package so.sao.shop.gpssocket.Utils;
+package so.sao.shop.gpssocket.utils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.ReferenceCountUtil;
-import so.sao.shop.gpssocket.Dto.MessageDto;
-import so.sao.shop.gpssocket.Interface.iBodyUtils;
+import so.sao.shop.gpssocket.dto.MessageDto;
+import so.sao.shop.gpssocket.interfaces.iBodyUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 
 /**
  * @author negocat on 2017/10/27.
