@@ -1,23 +1,25 @@
 package so.sao.shop.gpssocket.Dto;
 
+import so.sao.shop.gpssocket.Utils.CodeUtils;
+
 /**
  * @author negocat on 2017/10/27.
  */
 public class MessageDto {
 
-    private String body;
+    private byte[] body;
     private int protocol;
 
-    public MessageDto(String body, int protocol) {
+    public MessageDto(byte[] body, int protocol) {
         this.body = body;
         this.protocol = protocol;
     }
 
-    public String getBody() {
+    public byte[] getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(byte[] body) {
         this.body = body;
     }
 
@@ -31,8 +33,14 @@ public class MessageDto {
 
     @Override
     public String toString() {
+        if (body == null || body.length <= 0){
+            return "MessageDto{" +
+                    "body=''" +
+                    ", protocol=" + protocol +
+                    '}';
+        }
         return "MessageDto{" +
-                "body='" + body + '\'' +
+                "body='" + CodeUtils.bcd2Str(body) + '\'' +
                 ", protocol=" + protocol +
                 '}';
     }

@@ -19,7 +19,7 @@ public class Login implements iService {
 
     @Override
     public void doService(iBodyUtils ctx, MessageDto messageDto) {
-        LOGGER.info("body:" + CodeUtils.bcd2Str(messageDto.getBody().getBytes()));
+        LOGGER.info("body:" + CodeUtils.bcd2Str(messageDto.getBody()));
 
         ctx.writeEncode(null, (byte) 0x01);//登录成功
         ctx.writeEncode(null, (byte) 0x44);//登录失败

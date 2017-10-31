@@ -1,5 +1,6 @@
 package so.sao.shop.gpssocket;
 
+import ch.qos.logback.core.encoder.ByteArrayUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.*;
 import io.netty.channel.*;
@@ -13,10 +14,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import so.sao.shop.gpssocket.Dto.MessageDto;
 import so.sao.shop.gpssocket.Utils.BodyUtils;
+import so.sao.shop.gpssocket.Utils.CodeUtils;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * @author negocat on 2017/10/27.
@@ -98,28 +102,41 @@ public class NettyClient {
             bodyUtils.setCtx(ctx);
             System.out.println("客户端active");
 
-            bodyUtils.writeEncode("hhhh".getBytes(), (byte)1);
+//            bodyUtils.writeEncode("hhhh".getBytes(), (byte)1);
+//            byte[] b = {0x0A,0x03,0x17,0x0F,0x32,0x17, (byte) 0x9C,0x02,0x6B,0x3F,0x3E,0x0C,0x22, (byte) 0xAD,0x65,0x1F,0x34,0x60};
+//            bodyUtils.writeEncode(b, (byte) 0x10);
+//
+//            bodyUtils.writeEncode("".getBytes(), (byte)0x08);
 
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    while (true){
-//                        bodyUtils.writeEncode("".getBytes(), (byte)0x08);
-//                        try {
-//                            Thread.sleep(50000L);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }).run();
+            byte[] bytes = CodeUtils.str2Bcd("787805");
+            ByteBuf buffer = ctx.alloc().buffer();
+            buffer.writeBytes(bytes);
+            ctx.writeAndFlush(buffer);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(4000L);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    byte[] bytes1 = CodeUtils.str2Bcd("01686868680d0a787813100a03170f32179c026b3f3e0c22ad651f34600d0a787801080d0a");
+                    ByteBuf buffer1 = ctx.alloc().buffer();
+                    buffer1.writeBytes(bytes1);
+                    ctx.writeAndFlush(buffer1);
+                }
+            }).run();
         }
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg)
                 throws Exception {
             MessageDto messageDto = bodyUtils.readDecode((ByteBuf) msg);
-            System.out.println("收到服务器响应数据: " + messageDto);
+            while (messageDto != null){
+                System.out.println("收到服务器响应数据: " + messageDto);
+                messageDto = bodyUtils.readDecode((ByteBuf) msg);
+            }
         }
 
         @Override
@@ -145,5 +162,31 @@ public class NettyClient {
 
         NettyClient bean = GpssocketApplication.context.getBean(NettyClient.class);
         bean.connect(9999, "127.0.0.1");
+
+//        byte[] b = {0x0A,0x03,0x17,0x0F,0x32,0x17, (byte) 0x9C,0x02,0x6B,0x3F,0x3E,0x0C,0x22, (byte) 0xAD,0x65,0x1F,0x34,0x60};
+//
+//        byte[] bytes = {0x02, 0x6B, 0x3F, 0x3E};
+////        bytes = new byte[]{0x0C, 0x22, (byte) 0xAD, 0x65};
+//        int val = CodeUtils.bytesToInt2(bytes, 0);
+//
+//        double dblVal = val / 30000.0;
+//        int intVal = (int) (dblVal / 60);
+//        System.out.println(intVal);
+//        float fltVal = (float) (dblVal - intVal * 60);
+//        System.out.println(fltVal);
+
+//        String stmp = "00000000";
+//        byte[] bytes = {0x00, 0x00, 0x34, 0x60};
+//        String s = CodeUtils.bytesToBinaryString(bytes);
+//        System.out.println(s);
+//        System.out.println(ByteArrayUtil.toHexString(CodeUtils.binaryToBytes(s)));
+//        byte[] bytes1 = Arrays.copyOfRange(bytes, 1, 2);
+//        byte[] bytes2 = Arrays.copyOfRange(bytes, 2, 3);
+//        System.out.println(ByteArrayUtil.toHexString(bytes1));
+//        System.out.println(ByteArrayUtil.toHexString(bytes2));
+//
+//        String in = "0001100000";
+//        System.out.println(new BigInteger(in, 2));
+//        System.out.println(in.substring(2));
     }
 }

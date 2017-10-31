@@ -60,7 +60,10 @@ public class NettyHandler extends ChannelHandlerAdapter {
                 messageDto = bodyUtils.readDecode((ByteBuf) msg);
             }
 
-        } finally {
+        }catch (Exception e){
+            LOGGER.error("GPSERROR: ", e);
+            e.printStackTrace();
+        }finally {
             // 以静默方式丢弃接收的数据
             ReferenceCountUtil.release(msg);
         }

@@ -1,7 +1,9 @@
 package so.sao.shop.gpssocket.Utils;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.ReferenceCountUtil;
 import so.sao.shop.gpssocket.Dto.MessageDto;
 import so.sao.shop.gpssocket.Interface.iBodyUtils;
 
@@ -28,55 +30,68 @@ public class BodyUtils implements iBodyUtils {
      */
     private int protocol;
 
-    private StringBuffer ephemeralData = new StringBuffer();
+    private byte[] ret = new byte[0];
+
+    private ByteBuf ephemeralData = Unpooled.buffer(102400);
     private int bodylength = -1;
     private ChannelHandlerContext ctx;
 
     @Override
     public MessageDto readDecode(ByteBuf buf) throws UnsupportedEncodingException {
-        byte[] bytes = new byte[buf.readableBytes()];
-        buf.readBytes(bytes);
-
         //加入临时缓存中
-        ephemeralData.append(new String(bytes));
+        if (buf.readableBytes() > 0){
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.readBytes(bytes);
+
+            ephemeralData.writeBytes(bytes);
+        }
+
         MessageDto messageDto = dataSlice();
+
+        //临时缓存全部处理完毕之后，清理缓存
+        if (ephemeralData.readableBytes() <= 0){
+            ephemeralData.release();
+            ephemeralData = ephemeralData.alloc().buffer();
+        }
 
         return messageDto;
     }
 
     public MessageDto dataSlice(){
-        String ret = "";
         //当bodylength小于0，并且ephemeralData长度大于6的时候，做协议解析
         if (bodylength < 0){
             int len = headByte.length();
             //数据不足六位，不做处理
-            if (ephemeralData.length() < 4+len){return null;}
+            if (ephemeralData.readableBytes() < 4+len){return null;}
             //起始2byte魔数验证
-            String str = ephemeralData.substring(0, len);
-            if (!str.equals(headByte)){ctx.close();}
+            byte[] str = new byte[len];
+            ephemeralData.readBytes(str);
+            if (!new String(str).equals(headByte)){ctx.close();}
             //获取1byte数据长度
-            bodylength = ephemeralData.charAt(len)-1;
+            bodylength = ephemeralData.readByte()-1;
             //获取1byte协议
-            protocol = ephemeralData.charAt(len+1);
+            protocol = ephemeralData.readByte();
 
-            ephemeralData.delete(0, len+2);
+//            ephemeralData.readBytes(len+2);
         }
         //当bodylength大于0并且临时数据ephemeralData大于数据长度bodylength的时候，获取数据内容
-        if (bodylength > 0 && bodylength <= ephemeralData.length()){
+        if (bodylength > 0 && bodylength <= ephemeralData.readableBytes()){
             //根据数据长度获取数据内容
-            ret = ephemeralData.substring(0, bodylength);
-            ephemeralData.delete(0, bodylength);
+            ret = new byte[bodylength];
+            ephemeralData.readBytes(ret);
             bodylength = 0;
         }
         //当bodylength等于0，已全部获取完数据的时候，且临时数据长度大于等于2的时候，解析尾部协议
-        if (bodylength == 0 && ephemeralData.length() >= endByte.length()){
-            String str = ephemeralData.substring(0, endByte.length());
-            ephemeralData.delete(0, endByte.length());
-            if (!str.equals(endByte)){
+        if (bodylength == 0 && ephemeralData.readableBytes() >= endByte.length()){
+            byte[] str = new byte[2];
+            ephemeralData.readBytes(str);
+            if (!new String(str).equals(endByte)){
                 return null;
             }
             bodylength = -1;
-            return new MessageDto(ret, protocol);
+            MessageDto messageDto = new MessageDto(ret, protocol);
+            ret = new byte[0];
+            return messageDto;
         }
 
         return null;
