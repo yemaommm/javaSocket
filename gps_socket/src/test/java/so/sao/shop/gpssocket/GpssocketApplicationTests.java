@@ -11,6 +11,7 @@ public class GpssocketApplicationTests {
 
 	@Test
 	public void contextLoads() {
+		System.out.println(123);
 	}
 
 }
