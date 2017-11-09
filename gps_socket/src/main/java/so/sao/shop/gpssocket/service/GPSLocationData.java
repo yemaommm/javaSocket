@@ -11,6 +11,7 @@ import so.sao.shop.gpssocket.utils.CodeUtils;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * GPS 定位数据包
@@ -22,8 +23,10 @@ public class GPSLocationData implements iService {
     private Logger LOGGER = LoggerFactory.getLogger(GPSLocationData.class);
 
     @Override
-    public void doService(iBodyUtils ctx, MessageDto messageDto) {
-        byte[] bb = null;
+    public void doService(iBodyUtils ctx, MessageDto messageDto, Map<String, Object> g) {
+        if (g.get("IMEI") == null){return;}
+
+        String IMEI = g.get("IMEI").toString();
 
         byte[] bytes = messageDto.getBody();
         // 日期时间  6byte
@@ -55,12 +58,13 @@ public class GPSLocationData implements iService {
 
         int course = new BigInteger(typeStr.substring(6), 2).intValue();//航向
 
-        System.out.println(year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second);
-        System.out.println("GPS 信息长度:"+GPSLength+"  卫星个数:"+satelliteNum);
-        System.out.println("经度:"+latitudeDto);
-        System.out.println("维度:"+longitudeDto);
-        System.out.println("GPS 速度:"+speed);
-        System.out.println("GPS是否定位:"+location+"  东西经:"+la+"  南北纬:"+lo+"  航向:"+course);
+        LOGGER.info("IMEI: "+IMEI);
+        LOGGER.info(year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second);
+        LOGGER.info("GPS 信息长度:"+GPSLength+"  卫星个数:"+satelliteNum);
+        LOGGER.info("经度:"+latitudeDto);
+        LOGGER.info("维度:"+longitudeDto);
+        LOGGER.info("GPS 速度:"+speed);
+        LOGGER.info("GPS是否定位:"+location+"  东西经:"+la+"  南北纬:"+lo+"  航向:"+course);
 
         ctx.writeEncode(CodeUtils.toDate(), (byte) 10);
     }

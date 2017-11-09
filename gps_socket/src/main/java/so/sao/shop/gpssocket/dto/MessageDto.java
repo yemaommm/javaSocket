@@ -33,14 +33,8 @@ public class MessageDto {
 
     @Override
     public String toString() {
-        if (body == null || body.length <= 0){
-            return "MessageDto{" +
-                    "body=''" +
-                    ", protocol=" + protocol +
-                    '}';
-        }
         return "MessageDto{" +
-                "body='" + CodeUtils.bytesToHexString(body) + '\'' +
+                "body=" + CodeUtils.bytesToHexString(body) +
                 ", protocol=" + protocol +
                 '}';
     }

@@ -13,16 +13,20 @@ import so.sao.shop.gpssocket.dto.MessageDto;
 import so.sao.shop.gpssocket.interfaces.iService;
 import so.sao.shop.gpssocket.utils.BodyUtils;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * server端网络IO事件处理
  * @author negocat on 2017/10/27.
  */
-public class NettyHandler extends ChannelHandlerAdapter {
+public class NettyHandler extends SimpleChannelInboundHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyHandler.class);
 
     public BodyUtils bodyUtils = new BodyUtils();
     private ApplicationContext context = null;
+    private Map<String, Object> G = new ConcurrentHashMap<>(24);
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -36,7 +40,7 @@ public class NettyHandler extends ChannelHandlerAdapter {
      * @throws Exception
      */
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        ByteBuf in = (ByteBuf) msg;
         try {
             LOGGER.info("ReadMassage: " + ByteBufUtil.hexDump((ByteBuf) msg));
@@ -48,7 +52,7 @@ public class NettyHandler extends ChannelHandlerAdapter {
 
                 if (this.context.containsBean(format)){
                     iService bean = (iService) this.context.getBean(format);
-                    bean.doService(bodyUtils, messageDto);
+                    bean.doService(bodyUtils, messageDto, G);
                 }
 
                 messageDto = bodyUtils.readDecode((ByteBuf) msg);
@@ -59,7 +63,7 @@ public class NettyHandler extends ChannelHandlerAdapter {
             e.printStackTrace();
         }finally {
             // 以静默方式丢弃接收的数据
-            ReferenceCountUtil.release(msg);
+//            ReferenceCountUtil.release(msg);
         }
     }
 

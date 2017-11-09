@@ -77,7 +77,7 @@ public class NettyClient {
 
      */
 
-    public class ClientHandler extends ChannelHandlerAdapter {
+    public class ClientHandler extends SimpleChannelInboundHandler {
 
         private final Logger logger= LoggerFactory.getLogger(ClientHandler.class.getName());
         private ByteBuf firstMessage;
@@ -123,7 +123,7 @@ public class NettyClient {
         }
 
         @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg)
+        public void channelRead0(ChannelHandlerContext ctx, Object msg)
                 throws Exception {
             MessageDto messageDto = bodyUtils.readDecode((ByteBuf) msg);
             while (messageDto != null){

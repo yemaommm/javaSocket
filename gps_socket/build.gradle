@@ -38,6 +38,6 @@ repositories {
 dependencies {
 //	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('io.netty:netty-all:5.0.0.Alpha1')
+	compile('io.netty:netty-all:4.1.16.Final')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

@@ -154,6 +154,9 @@ public class CodeUtils {
      * bytes转十六进制字符串
      */
     public static String bytesToHexString(byte[] b){
+        if (b == null || b.length <= 0){
+            return "";
+        }
         String s = new BigInteger(1, b).toString(16);
         int len = 2*b.length;
         len -= s.length();
