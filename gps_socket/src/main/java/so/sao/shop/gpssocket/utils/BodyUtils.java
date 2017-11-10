@@ -31,7 +31,7 @@ public class BodyUtils implements iBodyUtils {
     private byte[] ret = new byte[0];
 
     private ByteBuf ephemeralData = Unpooled.buffer(102400);
-    private int bodylength = -1;
+    private int bodyLength = -1;
     private ChannelHandlerContext ctx;
 
     @Override
@@ -56,8 +56,8 @@ public class BodyUtils implements iBodyUtils {
     }
 
     public MessageDto dataSlice(){
-        //当bodylength小于0，并且ephemeralData长度大于6的时候，做协议解析
-        if (bodylength < 0){
+        //当bodyLength小于0，并且ephemeralData长度大于6的时候，做协议解析
+        if (bodyLength < 0){
             int len = headByte.length();
             //数据不足六位，不做处理
             if (ephemeralData.readableBytes() < 4+len){return null;}
@@ -66,27 +66,25 @@ public class BodyUtils implements iBodyUtils {
             ephemeralData.readBytes(str);
             if (!new String(str).equals(headByte)){ctx.close();}
             //获取1byte数据长度
-            bodylength = ephemeralData.readByte()-1;
+            bodyLength = ephemeralData.readByte()-1;
             //获取1byte协议
             protocol = ephemeralData.readByte();
-
-//            ephemeralData.readBytes(len+2);
         }
-        //当bodylength大于0并且临时数据ephemeralData大于数据长度bodylength的时候，获取数据内容
-        if (bodylength > 0 && bodylength <= ephemeralData.readableBytes()){
+        //当bodyLength大于0并且临时数据ephemeralData大于数据长度bodyLength的时候，获取数据内容
+        if (bodyLength > 0 && bodyLength <= ephemeralData.readableBytes()){
             //根据数据长度获取数据内容
-            ret = new byte[bodylength];
+            ret = new byte[bodyLength];
             ephemeralData.readBytes(ret);
-            bodylength = 0;
+            bodyLength = 0;
         }
-        //当bodylength等于0，已全部获取完数据的时候，且临时数据长度大于等于2的时候，解析尾部协议
-        if (bodylength == 0 && ephemeralData.readableBytes() >= endByte.length()){
+        //当bodyLength等于0，已全部获取完数据的时候，且临时数据长度大于等于2的时候，解析尾部协议
+        if (bodyLength == 0 && ephemeralData.readableBytes() >= endByte.length()){
             byte[] str = new byte[2];
             ephemeralData.readBytes(str);
             if (!new String(str).equals(endByte)){
                 return null;
             }
-            bodylength = -1;
+            bodyLength = -1;
             MessageDto messageDto = new MessageDto(ret, protocol);
             ret = new byte[0];
             return messageDto;
