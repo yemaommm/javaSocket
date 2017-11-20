@@ -18,7 +18,7 @@ import java.util.zip.ZipOutputStream;
 @SpringBootApplication
 public class GpssocketApplication implements ApplicationContextAware {
 
-    @Value(" ${socket.server.port}")
+    @Value("${socket.server.port}")
     private String port;
 
     public static ApplicationContext context = null;
